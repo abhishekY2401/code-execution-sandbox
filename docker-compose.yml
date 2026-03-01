@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres123
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: coderunner
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports: 
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: coderunner-api
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://postgres123:postgres@postgres:5432/coderunner
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "5000:5000"
+
+    
+  worker: 
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: coderunner-worker
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres123:postgres@postgres:5432/coderunner
+      - REDIS_URL=redis://redis:6379/0
+
+volumes:
+  postgres_data:

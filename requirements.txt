@@ -1,5 +1,6 @@
 Flask
 Flask-SQLAlchemy
+Flask-Migrate
 psycopg2-binary
 redis
 rq
@@ -8,3 +9,4 @@ marshmallow
 kubernetes
 gunicorn
 alembic
+httpx
